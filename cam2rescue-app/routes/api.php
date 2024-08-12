@@ -7,6 +7,8 @@ use App\Http\Controllers\PostPetController;
 use App\Http\Controllers\UserActivityLogsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PetController;
+use App\Http\Controllers\Auth\UserAuthController;
+use App\Http\Controllers\utility\UtilityFetchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,11 +24,25 @@ use App\Http\Controllers\PetController;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+Route::post('/login', [UserAuthController::class, 'login']);
 
 Route::post('/post-pet', [PostPetController::class, 'postPet']);
+Route::post('/post-rescue', [PostPetController::class, 'postRescue']);
+
 Route::post('/store-logs', [UserActivityLogsController::class, 'store']);
+
 Route::post('/add-user', [UserController::class, 'createUser']);
 Route::get('/user-list', [UserController::class, 'getList']);
+
 Route::get('/list-of-pets', [PetController::class, 'getPetList']);
+
+
+Route::get('/barangay-list',    [UtilityFetchController::class, 'getBarangayList']);
+Route::get('/color-list',       [UtilityFetchController::class, 'getColorList']);
+Route::get('/injury-list',      [UtilityFetchController::class, 'getInjuryList']);
+Route::get('/pet-illness-list', [UtilityFetchController::class, 'getPetIllnessList']);
+Route::get('/get-gender',       [UtilityFetchController::class, 'getSexList']);
+Route::get('/get-urgency',      [UtilityFetchController::class, 'getUrgencyList']);
+Route::get('/get-statuses',     [UtilityFetchController::class, 'getStatuses']);
 
 // Route::get('/user', [ManageUserController::class, 'getUserList']);
