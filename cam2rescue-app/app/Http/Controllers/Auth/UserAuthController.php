@@ -4,31 +4,37 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Hash;
+use App\Models\Auth\UserAuth;
 
 class UserAuthController extends Controller
 {
     public function login(Request $request)
-    {
-        $request->validate([
-            'username' => 'required',
-            'password' => 'required',
-        ]);
+        {
+            $request->validate([
+                'username' => 'required',
+                'password' => 'required',
+            ]);
 
-        $user = User::where('username', $request->username)->first();
+            $user = UserAuth::where('Username', $request->username)->first();
 
-        if ($user && Hash::check($request->password, $user->password)) {
-            Auth::login($user);
+            if ($user && Hash::check($request->password, $user->Password)) {
+                Auth::login($user);
 
-            if ($user->UserType == 1) {
-                return redirect()->intended('dashboard');
-            } elseif ($user->UserType == 2) {
-                return redirect()->intended('/');
+                return response()->json(['user' => $user], 200);
             }
+
+            return response()->json(['error' => 'The provided credentials do not match our records.'], 401);
         }
 
-        return back()->withErrors([
-            'username' => 'The provided credentials do not match our records.',
-        ]);
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        return response()->json(['message' => 'Successfully logged out']);
     }
 }
 
