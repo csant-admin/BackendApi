@@ -12,24 +12,33 @@ use App\Models\Auth\UserAuth;
 
 class UserAuthController extends Controller
 {
-    public function login(Request $request)
-        {
-            $request->validate([
-                'username' => 'required',
-                'password' => 'required',
-            ]);
-
+    public function login(Request $request) {
+        $request->validate([
+            'username' => 'required',
+            'password' => 'required',
+        ]);
+    
+        try {
             $user = UserAuth::where('Username', $request->username)->first();
-
-            if ($user && Hash::check($request->password, $user->Password)) {
-                Auth::login($user);
-
-                return response()->json(['user' => $user], 200);
+            if (!$user) {
+                return response()->json(['error' => 'User not found.'], 404);
             }
+    
+            if ($user && Hash::check($request->password, $user->Password)) {
 
-            return response()->json(['error' => 'The provided credentials do not match our records.'], 401);
+                Auth::login($user);
+                
+                $token = $user->createToken('authToken')->plainTextToken;
+    
+                return response()->json(['user' => $user, 'access_token' => $token, 'token_type' => 'Bearer'], 200);
+            } else {
+                return response()->json(['error' => 'Invalid credentials.'], 401);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
         }
-
+    }
+    
 
     public function logout(Request $request)
     {

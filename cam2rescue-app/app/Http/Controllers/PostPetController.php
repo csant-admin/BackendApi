@@ -33,15 +33,7 @@ class PostPetController extends Controller
     }
 
     public function postRescue(Request $request) {
-        if (!Auth::check()) {
-            return response()->json(['msg' => 'User not authenticated'], 401);
-        }
-    
-        // Get the authenticated user
-        $user = Auth::user();
-        echo '<pre>';
-        print_r($user);
-        echo '</pre>';
+
         $request->validate([
             'petId'             => 'required|string|max:50',
             'image'             => 'required|mimes:jpg,jpeg,png|max:2048',
@@ -69,7 +61,6 @@ class PostPetController extends Controller
             'Description'       => $request->input('description'),
             'ImagePath'         => $request->file('image')->store('images/rescue-images', 'public'),
             'created_by'        => $request->input('UserID'),
-            'updated_by'        => '',
         ];
         try {
       
