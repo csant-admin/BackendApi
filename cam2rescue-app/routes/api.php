@@ -9,6 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\utility\UtilityFetchController;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,10 +25,13 @@ use App\Http\Controllers\utility\UtilityFetchController;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
-Route::post('/login', [UserAuthController::class, 'login']);
+Route::post('/login',   [UserAuthController::class, 'login']);
+Route::post('/logout',  [UserAuthController::class, 'logout']);
 
 Route::post('/post-pet', [PostPetController::class, 'postPet']);
 Route::post('/post-rescue', [PostPetController::class, 'postRescue']);
+// Route::middleware('auth:sanctum')->post('/post-rescue', [PostPetController::class, 'postRescue']);
+
 
 Route::post('/store-logs', [UserActivityLogsController::class, 'store']);
 

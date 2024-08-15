@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PetController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\utility\UtilityFetchController;
 
 /*
@@ -28,6 +29,9 @@ Route::get('/injury-list', [UtilityFetchController::class, 'getInjuryList']);
 Route::get('/pet-illness-list', [UtilityFetchController::class, 'getPetIllnessList']);
 Route::get('/get-gender', [UtilityFetchController::class, 'getSexList']);
 Route::get('/get-urgency', [UtilityFetchController::class, 'getUrgencyList']);
+// routes/web.php
+Route::get('/test-token', [TestController::class, 'createToken']);
+
 
 Route::get('/check-auth', function () {
     $user = UserAuth::user();
