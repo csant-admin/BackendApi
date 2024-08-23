@@ -12,7 +12,7 @@ class TestController extends Controller
 
     public function createToken()
     {
-        $user = UserAuth::find(1); // Adjust the ID or query as needed
+        $user = UserAuth::find(722523075850555); // Adjust the ID or query as needed
         if ($user) {
             $token = $user->createToken('testToken')->plainTextToken;
             dd($token); // Dump the token to verify creation
