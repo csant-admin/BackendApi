@@ -10,6 +10,8 @@ use App\Models\utility\TblPetIllness;
 use App\Models\utility\TblSex;
 use App\Models\utility\TblUrgency;
 use App\Models\utility\TblStatuses;
+use App\Models\utility\TblUserType;
+use App\Models\utility\TblOrganizationType;
 use Illuminate\Http\Request;
 
 class UtilityFetchController extends Controller
@@ -137,6 +139,42 @@ class UtilityFetchController extends Controller
                 ];
             });
             return response()->json($statuses, 200);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getUserType() {
+        try {
+            $data = TblUserType::select('id', 'description')->orderBy('description', 'asc')->get();
+            if($data->isEmpty()) {
+                return response()->json([], 404);
+            }
+            $userType = $data->map(function($item){
+                return [
+                    'id' => $item->id,
+                    'description' => $item->description
+                ];
+            });
+            return response()->json( $userType, 200);
+        } catch(\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getOrganizationType() {
+        try {
+            $data = TblOrganizationType::select('id', 'description')->orderBy('description', 'asc')->get();
+            if($data->isEmpty()) {
+                return response()->json([], 404);
+            }
+            $organizationType = $data->map(function($item){
+                return [
+                    'id' => $item->id,
+                    'description' => $item->description
+                ];
+            });
+            return response()->json($organizationType, 200);
         } catch(\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }

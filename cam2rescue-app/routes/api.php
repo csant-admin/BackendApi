@@ -41,12 +41,14 @@ Route::get('/user-list', [UserController::class, 'getList']);
 Route::get('/list-of-pets', [PetController::class, 'getPetList']);
 
 
-Route::get('/barangay-list',    [UtilityFetchController::class, 'getBarangayList']);
-Route::get('/color-list',       [UtilityFetchController::class, 'getColorList']);
-Route::get('/injury-list',      [UtilityFetchController::class, 'getInjuryList']);
-Route::get('/pet-illness-list', [UtilityFetchController::class, 'getPetIllnessList']);
-Route::get('/get-gender',       [UtilityFetchController::class, 'getSexList']);
-Route::get('/get-urgency',      [UtilityFetchController::class, 'getUrgencyList']);
-Route::get('/get-statuses',     [UtilityFetchController::class, 'getStatuses']);
+Route::get('/barangay-list',            [UtilityFetchController::class, 'getBarangayList']);
+Route::get('/color-list',               [UtilityFetchController::class, 'getColorList']);
+Route::get('/injury-list',              [UtilityFetchController::class, 'getInjuryList']);
+Route::get('/pet-illness-list',         [UtilityFetchController::class, 'getPetIllnessList']);
+Route::get('/get-gender',               [UtilityFetchController::class, 'getSexList']);
+Route::get('/get-urgency',              [UtilityFetchController::class, 'getUrgencyList']);
+Route::get('/get-statuses',             [UtilityFetchController::class, 'getStatuses']);
+Route::get('/get-user-type',            [UtilityFetchController::class, 'getUserType']);
+Route::get('/get-organization-type',    [UtilityFetchController::class, 'getOrganizationType']);
 
 // Route::get('/user', [ManageUserController::class, 'getUserList']);
