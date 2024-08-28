@@ -17,7 +17,6 @@ class UserAuthController extends Controller
             'username' => 'required',
             'password' => 'required',
         ]);
-    
         try {
             $user = UserAuth::where('Username', $request->username)->first();
             if (!$user) {

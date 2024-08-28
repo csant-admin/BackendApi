@@ -11,7 +11,7 @@ class PetController extends Controller
 
     public function getPetList() {
         try {
-            $lists = DB::table('tblpet')->select('PetID', 'PetName', 'ImagePath')->get();
+            $lists = DB::table('tblpet')->select('PetID', 'PetName', 'PetDescription', 'ImagePath')->get();
     
             if ($lists->isEmpty()) {
                 return response()->json(['data' => [], 'message' => 'No Pets Found!'], 404);
