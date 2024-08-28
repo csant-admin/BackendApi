@@ -10,6 +10,7 @@ use App\Http\Controllers\PetController;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\utility\UtilityFetchController;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
+use App\Http\Controllers\rescue\PetRescueController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,5 +51,6 @@ Route::get('/get-urgency',              [UtilityFetchController::class, 'getUrge
 Route::get('/get-statuses',             [UtilityFetchController::class, 'getStatuses']);
 Route::get('/get-user-type',            [UtilityFetchController::class, 'getUserType']);
 Route::get('/get-organization-type',    [UtilityFetchController::class, 'getOrganizationType']);
+Route::get('/get-rescue-list',          [PetRescueController::class, 'getRescueList']);
 
 // Route::get('/user', [ManageUserController::class, 'getUserList']);
