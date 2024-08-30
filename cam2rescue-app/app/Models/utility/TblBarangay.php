@@ -10,4 +10,8 @@ class TblBarangay extends Model
     use HasFactory;
     
     protected $table = "tblbarangay";
+
+    public function getBarangay() {
+        return $this->hasMany(PetRescueModel::class, 'BarangayId', 'id');
+    }
 }

@@ -51,6 +51,7 @@ Route::get('/get-urgency',              [UtilityFetchController::class, 'getUrge
 Route::get('/get-statuses',             [UtilityFetchController::class, 'getStatuses']);
 Route::get('/get-user-type',            [UtilityFetchController::class, 'getUserType']);
 Route::get('/get-organization-type',    [UtilityFetchController::class, 'getOrganizationType']);
-Route::get('/get-rescue-list',          [PetRescueController::class, 'getRescueList']);
+Route::get('/get-rescue-list',          [PetRescueController::class,    'getRescueList']);
+Route::put('/approve-rescue/{id}',      [PetRescueController::class,    'approveRescue']);
 
 // Route::get('/user', [ManageUserController::class, 'getUserList']);
