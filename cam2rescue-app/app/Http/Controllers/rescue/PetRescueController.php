@@ -12,26 +12,29 @@ class PetRescueController extends Controller
     //
     public function getRescueList() {
         try{
-            $data = PetRescueModel::with(['userDetail','barangay', 'petColor', 'petSex', 'urgency', 'injury'])->get();
+            $data = PetRescueModel::with(['userDetail','barangay', 'petColor', 'petSex', 'urgency', 'injury', 'rescueStatuses'])->orderBy('RescueStatus', 'asc')->get();
+
             if($data->isEmpty()) {
                 return response()->json(['message' => 'No pets listed for rescue'], 404 );
             }
 
             $rescueDataList = $data->map(function($item) {
                 return [
-                    'RescueId'      => $item->RescueId,
-                    'SBZ_Address'   => $item->SBZ_Address,
-                    'BarangayId'    => $item->barangay->description,
-                    'City'          => $item->City,
-                    'PetColorId'    => $item->petColor->description,
-                    'PetSexId'      => $item->petSex->description,
-                    'UrgencyId'     => $item->urgency->description,
-                    'InjuryId'      => $item->injury->description,
-                    'Description'   => $item->Description,
-                    'created_by'    => $item->userDetail->Lastname . ', ' . $item->userDetail->Firstname,
-                    'updated_by'    => $item->updated_by,
-                    'created_at'    => $item->created_at->format('Y-m-d g:i A'),
-                    'updated_at'    => $item->updated_at->format('Y-m-d g:i A')
+                    'RescueId'          => $item->RescueId,
+                    'Address'           => $item->SBZ_Address . ' ' . $item->barangay->description . ', ' . $item->City,
+                    'BarangayId'        => $item->barangay->description,
+                    'City'              => $item->City,
+                    'PetColorId'        => $item->petColor->description,
+                    'PetSexId'          => $item->petSex->description,
+                    'ImportantNote'     => $item->urgency->description .', '. $item->injury->description,
+                    'InjuryId'          => $item->injury->description,
+                    'Description'       => $item->Description,
+                    'RescueStatus'      => $item->rescueStatuses->description,
+                    'RescueStatusId'    => $item->rescueStatuses->StatusId,
+                    'created_by'        => $item->userDetail->Lastname . ', ' . $item->userDetail->Firstname,
+                    'updated_by'        => $item->updated_by ? $item->userDetail->Lastname . ', ' . $item->userDetail->Firstname : "-",
+                    'created_at'        => $item->created_at->format('Y-m-d g:i A'),
+                    'updated_at'        => $item->updated_at->format('Y-m-d g:i A')
                 ];
 
             });
@@ -43,14 +46,18 @@ class PetRescueController extends Controller
 
     }
 
-    public function approveRescue($id) {
+    public function approveRescue($id, Request $request) {
         try {
             $rescue = PetRescueModel::where('RescueId', $id)->firstOrFail();
-            if(!$rescue) {
-                return response()->json(['message' => "Cannot Find Pet with this ID $id"], 404);
-            }
-            $rescue->RescueStatus = 1;
-            $rescue->updated_by = 'ApproverName'; 
+
+            $validatedData = $request->validate([
+                'RescueStatus'  => 'required|integer',
+                'updated_by'    => 'required|string',
+            ]);
+
+            $rescue->RescueStatus = $validatedData['RescueStatus'];
+            $rescue->updated_by = $validatedData['updated_by'];
+            $rescue->FailedReason = $request['FailedReason'] ?? null;
             $rescue->updated_at = Carbon::now();
             
             $rescue->save();

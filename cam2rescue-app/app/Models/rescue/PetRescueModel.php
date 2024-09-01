@@ -10,13 +10,15 @@ use App\Models\utility\TblSex;
 use App\Models\utility\TblUrgency;
 use App\Models\utility\TblInjury;
 use App\Models\User\UserDetail;
+use App\Models\core\TblRescueStatus;
 
 class PetRescueModel extends Model
 {
     use HasFactory;
 
     protected $table = "tblpetrescue";
-    protected $guarded = [];
+
+    protected $guarded = ['updated_by', 'updated_at'];
 
     public function userDetail() {
         return $this->belongsTo(UserDetail::class, 'created_by', 'UserId');
@@ -40,6 +42,10 @@ class PetRescueModel extends Model
 
     public function injury() {
         return $this->belongsTo(TblInjury::class, 'InjuryId', 'id');
+    }
+
+    public function rescueStatuses() {
+        return $this->belongsTo(TblRescueStatus::class, 'RescueStatus', 'StatusId');
     }
     
 }
