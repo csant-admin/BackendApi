@@ -6,6 +6,7 @@ use App\Http\Controllers\PetController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\utility\UtilityFetchController;
 use App\Http\Controllers\rescue\PetRescueController;
+use App\Http\Controllers\report\RescueReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,7 @@ Route::get('/get-urgency', [UtilityFetchController::class, 'getUrgencyList']);
 // routes/web.php
 Route::get('/test-token', [TestController::class, 'createToken']);
 Route::get('/get-rescue-list', [PetRescueController::class, 'getRescueList']);
+Route::get('generate-rescue-report/{rescueId}', [RescueReportController::class, 'generateRescueReport']);
 
 
 Route::get('/check-auth', function () {

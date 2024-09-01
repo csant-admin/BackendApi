@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\utility\UtilityFetchController;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use App\Http\Controllers\rescue\PetRescueController;
+use App\Http\Controllers\report\RescueReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,5 +54,6 @@ Route::get('/get-user-type',            [UtilityFetchController::class, 'getUser
 Route::get('/get-organization-type',    [UtilityFetchController::class, 'getOrganizationType']);
 Route::get('/get-rescue-list',          [PetRescueController::class,    'getRescueList']);
 Route::put('/approve-rescue/{id}',      [PetRescueController::class,    'approveRescue']);
+Route::get('generate-rescue-report/{rescueId}', [RescueReportController::class, 'generateRescueReport']);
 
-// Route::get('/user', [ManageUserController::class, 'getUserList']);
+// Route::get('/user', [ManageUserController::class, 'getUserList']);RescueReportController
