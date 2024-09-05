@@ -14,11 +14,27 @@ class RescueReportController extends Controller
     public function generateRescueReport($id)
     {
         try {
-            $rescue = RescueReport::findOrFail($id);
-            // return $rescue;
+            $rescue = RescueReport::with(['userDetail','barangay', 'petColor', 'petSex', 'urgency', 'injury', 'rescueStatuses'])->findOrFail($id);
+            
             $data = [
-                'rescue' => $rescue->toArray()
-            ];
+                'ImagePath'         => $rescue->ImagePath,
+                'RescueId'          => $rescue->RescueId,
+                'Address'           => $rescue->SBZ_Address . ' ' . $rescue->barangay->description . ', ' . $rescue->City,
+                'BarangayId'        => $rescue->barangay->description,
+                'City'              => $rescue->City,
+                'PetColorId'        => $rescue->petColor->description,
+                'PetSexId'          => $rescue->petSex->description,
+                'ImportantNote'     => $rescue->urgency->description . ', ' . $rescue->injury->description,
+                'InjuryId'          => $rescue->injury->description,
+                'Description'       => $rescue->Description,
+                'RescueStatus'      => $rescue->rescueStatuses->description,
+                'RescueStatusId'    => $rescue->rescueStatuses->StatusId,
+                'created_by'        => $rescue->userDetail->Lastname . ', ' . $rescue->userDetail->Firstname,
+                'updated_by'        => $rescue->updated_by ? $rescue->userDetail->Lastname . ', ' . $rescue->userDetail->Firstname : "-",
+                'created_at'        => $rescue->created_at->format('Y-m-d g:i A'),
+                'updated_at'        => $rescue->updated_at->format('Y-m-d g:i A')
+            ]; 
+
             $html = view('cam2rescue.generateRescueReport', $data)->render();
             $pdf = PDF::loadHTML($html)->setPaper('letter', 'portrait');
             $pdf->render();
