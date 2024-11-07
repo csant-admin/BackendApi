@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Models\User\User;
 use App\Models\User\UserDetail;
-
 class UserController extends Controller
 {
     //
@@ -30,8 +29,10 @@ class UserController extends Controller
             'Password'          => 'required|string|min:8|confirmed',
         ]);
         try {
-            User::create([
-                'UserID'    => $validatedData['UserId'],
+            $sequenceNo = CentralSequences::select('UserIdNo', 'Recently_Generated_UserID')->first();
+
+            $user = User::create([
+                'UserID'    => $sequenceNo->UserIdNo,
                 'Email'     => $validatedData['Email'],
                 'Username'  => $validatedData['Username'],
                 'UserType'  => $validatedData['UserType'],
@@ -39,7 +40,7 @@ class UserController extends Controller
             ]);
 
             UserDetail::create([
-                'UserId'                    => $validatedData['UserId'],
+                'UserId'                    => $user->UserId,
                 'Lastname'                  => $validatedData['Lastname'],
                 'Firstname'                 => $validatedData['Firstname'],
                 'Middlename'                => $validatedData['Middlename'],
@@ -53,6 +54,11 @@ class UserController extends Controller
                 'Organization_Barangay_Loc' => $validatedData['OrgBarangay'] ?? null,
                 'Organization_City_Loc'     => $validatedData['OrgCity'] ?? null
             ]);
+
+            $sequenceNo->where('Sequence_Id', 0)->update([
+                'UserIdNo' => intval($sequenceNo->UserIdNo) + 1,
+                'Recently_Generated_UserID' => $sequenceNo->UserIdNo
+            ]);
             
             return response()->json(['message' => 'User added successfully!'], 201);
 
@@ -64,8 +70,7 @@ class UserController extends Controller
     public function getList() {
         $data = array();
         try {
-            $lists = User::with('details')->get();
-
+            $lists = User::with(['details', 'details.sex', 'details.barangay','details.civilStatus'])->where('UserType', '!=', 1)->get();
             if($lists->isEmpty()) {
 
                 return response()->json([[], 'message' => 'No Records Found'], 404);
@@ -77,8 +82,8 @@ class UserController extends Controller
                     'Firstname' => $user->details->Firstname ?? null,
                     'Middlename' => $user->details->Middlename ?? null,
                     'Email' => $user->Email,
-                    'Gender' => $user->details->Gender ?? null,
-                    'Barangay' => $user->details->Barangay ?? null,
+                    'Gender' => $user->details->sex->description ?? null,
+                    'Barangay' => $user->details->barangay->description ?? null,
                     'City' => $user->details->City ?? null,
                 ];
             });

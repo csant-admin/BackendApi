@@ -11,7 +11,7 @@ class User extends Model
     use HasFactory;
 
     protected $table = "tbluser";
-    protected $fillable = ['UserID', 'Email', 'Username', 'Password'];
+    protected $guarded = [];
     protected $hidden = ['Password'];
     public $timestamps = false;
 
