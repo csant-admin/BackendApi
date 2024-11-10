@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\models\rescue\PetRescueModel;
 use App\Models\report\RescueReport;
-
+use App\Models\User\UserDetail;
 class TblSex extends Model
 {
     use HasFactory;
@@ -19,5 +19,9 @@ class TblSex extends Model
 
     public function petRescueReport() {
         return $this->hasMany(RescueReport::class, 'BarangayId', 'id');
+    }
+
+    public function userSex() {
+        return $this->hasMany(UserDetail::class, 'Gender', 'id');
     }
 }

@@ -13,13 +13,14 @@ class PetRescueController extends Controller
     public function getRescueList() {
         try{
             $data = PetRescueModel::with(['userDetail','barangay', 'petColor', 'petSex', 'urgency', 'injury', 'rescueStatuses'])->orderBy('RescueStatus', 'asc')->get();
-
+    
             if($data->isEmpty()) {
                 return response()->json(['message' => 'No pets listed for rescue'], 404 );
             }
 
             $rescueDataList = $data->map(function($item) {
                 return [
+                    'ImagePath'         => $item->ImagePath,
                     'RescueId'          => $item->RescueId,
                     'Address'           => $item->SBZ_Address . ' ' . $item->barangay->description . ', ' . $item->City,
                     'BarangayId'        => $item->barangay->description,
@@ -33,8 +34,8 @@ class PetRescueController extends Controller
                     'RescueStatusId'    => $item->rescueStatuses->StatusId,
                     'created_by'        => $item->userDetail->Lastname . ', ' . $item->userDetail->Firstname,
                     'updated_by'        => $item->updated_by ? $item->userDetail->Lastname . ', ' . $item->userDetail->Firstname : "-",
-                    'created_at'        => $item->created_at->format('Y-m-d g:i A'),
-                    'updated_at'        => $item->updated_at->format('Y-m-d g:i A')
+                    'created_at'        => date('Y-m-d g:i A', strtotime($item->created_at)),
+                    // 'updated_at'        => $item->updated_at->format('Y-m-d g:i A')
                 ];
 
             });

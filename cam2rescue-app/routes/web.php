@@ -7,6 +7,7 @@ use App\Http\Controllers\TestController;
 use App\Http\Controllers\utility\UtilityFetchController;
 use App\Http\Controllers\rescue\PetRescueController;
 use App\Http\Controllers\report\RescueReportController;
+use App\Http\Controllers\adoption\PetAdoptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +32,7 @@ Route::get('/injury-list', [UtilityFetchController::class, 'getInjuryList']);
 Route::get('/pet-illness-list', [UtilityFetchController::class, 'getPetIllnessList']);
 Route::get('/get-gender', [UtilityFetchController::class, 'getSexList']);
 Route::get('/get-urgency', [UtilityFetchController::class, 'getUrgencyList']);
+Route::get('/get-pet-detail', [PetAdoptionController::class, 'getPetDetail']);
 // routes/web.php
 Route::get('/test-token', [TestController::class, 'createToken']);
 Route::get('/get-rescue-list', [PetRescueController::class, 'getRescueList']);

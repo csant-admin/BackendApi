@@ -18,7 +18,10 @@ class PetRescueModel extends Model
 
     protected $table = "tblpetrescue";
 
-    protected $guarded = ['updated_by', 'updated_at'];
+    protected $guarded = [];
+
+    public $timestamps = false;
+
 
     public function userDetail() {
         return $this->belongsTo(UserDetail::class, 'created_by', 'UserId');

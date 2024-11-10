@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User\User;
 use App\models\rescue\PetRescueModel;
 use App\Models\report\RescueReport;
-
+use App\Models\utility\TblBarangay;
+use App\Models\utility\TblSex;
+use App\Models\utility\TblStatuses;
 class UserDetail extends Model
 {
     use HasFactory;
@@ -27,7 +29,16 @@ class UserDetail extends Model
         return $this->hasMany(RescueReport::class, 'BarangayId', 'id');
     }
 
-    // public function user() {
-    //     return $this->belongsTo(User::class, 'UserId', 'UserID');
-    // }
+    public function barangay() {
+        return $this->belongsTo(TblBarangay::class, 'Barangay', 'id');
+    }
+
+    public function sex() {
+        return $this->belongsTo(TblSex::class, 'Gender', 'id');
+    }
+
+    public function civilStatus() {
+        return $this->belongsTo(TblStatuses::class, 'CivilStatus', 'id');
+    }
+
 }

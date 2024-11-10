@@ -11,11 +11,12 @@ class User extends Model
     use HasFactory;
 
     protected $table = "tbluser";
-    protected $fillable = ['UserID', 'Email', 'Username', 'Password'];
+    protected $guarded = [];
     protected $hidden = ['Password'];
     public $timestamps = false;
 
     public function details() {
-        return $this->hasOne(UserDetail::class, 'UserId', 'UserID');
+        return $this->belongsTo(UserDetail::class, 'UserID', 'UserId');
     }
+    
 }
