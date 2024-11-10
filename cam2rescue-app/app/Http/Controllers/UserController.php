@@ -95,4 +95,31 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
+
+    public function getUserDetail($id) {
+        try {
+            $user = User::with(['details', 'details.barangay', 'details.sex', 'details.civilStatus'])->where('UserID', $id)->get();
+            if($user->isEmpty()) {
+                return response()->json(['message' => 'No Details Found!'], 404);
+            }
+            $user_data = $user->map(function($item) {
+                return [
+                    'id'            => $item->UserID,
+                    'email'         => $item->Email,
+                    'lastname'      => $item->details->Lastname,
+                    'firstname'     => $item->details->Firstname,
+                    'middlename'    => $item->details->Middlename,
+                    'birthday'      => $item->details->BirthDate,
+                    'gender'        => $item->details->sex->description,
+                    'civilStatus'   => $item->details->civilStatus->description,
+                    'barangay'      => $item->details->barangay->description,
+                    'city'          => $item->details->City
+                ];
+            });
+
+            return response()->json($user_data, 200);
+        } catch(\Exception $e) {
+            return response()->json(['message' => 'Error!' . $e->getMessage()], 500);
+        }
+    }
 }

@@ -14,6 +14,10 @@ class TblBarangay extends Model
     
     protected $table = "tblbarangay";
 
+    public function user() {
+        return $this->hasMany(User::class, 'UserID', 'id');
+    }
+
     public function petRescues() {
         return $this->hasMany(PetRescueModel::class, 'BarangayId', 'id');
     }

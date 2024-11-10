@@ -16,6 +16,7 @@ class User extends Model
     public $timestamps = false;
 
     public function details() {
-        return $this->hasOne(UserDetail::class, 'UserId', 'UserID');
+        return $this->belongsTo(UserDetail::class, 'UserID', 'UserId');
     }
+    
 }

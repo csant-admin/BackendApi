@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\utility\UtilityFetchController;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use App\Http\Controllers\rescue\PetRescueController;
+use App\Http\Controllers\adoption\PetAdoptionController;
 use App\Http\Controllers\report\RescueReportController;
 
 /*
@@ -27,33 +28,51 @@ use App\Http\Controllers\report\RescueReportController;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
-Route::post('/login',   [UserAuthController::class, 'login']);
-Route::post('/logout',  [UserAuthController::class, 'logout']);
 
-Route::post('/post-pet', [PostPetController::class, 'postPet']);
-Route::post('/post-rescue', [PostPetController::class, 'postRescue']);
-// Route::middleware('auth:sanctum')->post('/post-rescue', [PostPetController::class, 'postRescue']);
+Route::controller(UserAuthController::class)->group(function() {
+    Route::post('login', 'login');
+    Route::post('logout', 'logout');
+});
 
+Route::controller(PostPetController::class)->group(function() {
+    Route::post('post-pet', 'postPet');
+    Route::post('post-rescue', 'postRescue');
+});
 
-Route::post('/store-logs', [UserActivityLogsController::class, 'store']);
+Route::controller(PetController::class)->group(function() {
+    Route::get('list-of-pets', 'getPetList');
+});
 
-Route::post('/add-user', [UserController::class, 'createUser']);
-Route::get('/user-list', [UserController::class, 'getList']);
+Route::controller(UserActivityLogsController::class)->group(function() {
+    Route::post('store-logs', 'store');
+});
 
-Route::get('/list-of-pets', [PetController::class, 'getPetList']);
+Route::controller(UserController::class)->group(function() {
+    Route::post('add-user', 'createUser');
+    Route::get('user-list', 'getList');
+    Route::get('get-user-details/{id}', 'getUserDetail');
+});
 
+Route::controller(UtilityFetchController::class)->group(function(){
+    Route::get('barangay-list', 'getBarangayList');
+    Route::get('color-list', 'getColorList');
+    Route::get('injury-list', 'getInjuryList');
+    Route::get('pet-illness-list', 'getPetIllnessList');
+    Route::get('get-gender', 'getSexList');
+    Route::get('get-urgency', 'getUrgencyList');
+    Route::get('get-statuses', 'getStatuses');
+    Route::get('get-user-type', 'getUserType');
+    Route::get('get-organization-type', 'getOrganizationType');
+});
 
-Route::get('/barangay-list',            [UtilityFetchController::class, 'getBarangayList']);
-Route::get('/color-list',               [UtilityFetchController::class, 'getColorList']);
-Route::get('/injury-list',              [UtilityFetchController::class, 'getInjuryList']);
-Route::get('/pet-illness-list',         [UtilityFetchController::class, 'getPetIllnessList']);
-Route::get('/get-gender',               [UtilityFetchController::class, 'getSexList']);
-Route::get('/get-urgency',              [UtilityFetchController::class, 'getUrgencyList']);
-Route::get('/get-statuses',             [UtilityFetchController::class, 'getStatuses']);
-Route::get('/get-user-type',            [UtilityFetchController::class, 'getUserType']);
-Route::get('/get-organization-type',    [UtilityFetchController::class, 'getOrganizationType']);
-Route::get('/get-rescue-list',          [PetRescueController::class,    'getRescueList']);
-Route::put('/approve-rescue/{id}',      [PetRescueController::class,    'approveRescue']);
-Route::get('generate-rescue-report/{rescueId}', [RescueReportController::class, 'generateRescueReport']);
+Route::controller(PetRescueController::class)->group(function() {
+    Route::get('get-rescue-list', 'getRescueList');
+    Route::put('approve-rescue/{id}', 'approveRescue');
+    Route::get('generate-rescue-report/{id}', 'generateRescueReport');
+});
 
-// Route::get('/user', [ManageUserController::class, 'getUserList']);RescueReportController
+Route::controller(PetAdoptionController::class)->group(function() {
+    Route::get('get-pet-details/{id}', 'getPetDetail');
+    Route::post('post-adoption', 'adoptPet');
+});
+
