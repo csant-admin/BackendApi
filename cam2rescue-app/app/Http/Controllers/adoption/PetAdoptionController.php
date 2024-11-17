@@ -37,39 +37,41 @@ class PetAdoptionController extends Controller
     } 
 
     public function adoptPet(Request $request) {
-
         DB::connection('mysql_cam2rescue_core')->beginTransaction();
         DB::connection('mysql')->beginTransaction();
-
         try{
+            $adoptee = $request->Lastname . ' ' . $request->Firstname ?? null;
 
-            $adoptee = $request->payload['Lastname'] . $request->payload['Firstname'];
+            CentralSequences::where('Sequence_Id', 0)->increment('Adoption_ID');
 
-            $sequenceNo = CentralSequences::increment('Adoption_ID')->first(['Adoption_ID']);
+            $sequenceNo = CentralSequences::where('Sequence_Id', 0)->first(['Adoption_ID']);
+            if (!$sequenceNo) {
+                throw new \Exception("Failed to retrieve the incremented 'Adoption_ID'.");
+            }
 
             $common_data = [
                 'created_at'    => Carbon::now(),
                 'created_by'    => $adoptee,
                 'updated_at'    => Carbon::now(),
-                'updated_by'    => $request->paload['Orgname'] ?? null
+                'updated_by'    => $request->user_id
             ];
 
             $adoption_data = [
                 'adoption_id'       => $sequenceNo->Adoption_ID,
-                'pet_id'            => $request->payload['pet_Id'],
-                'user_id'           => $request->payload['user_id'],
+                'pet_id'            => $request->pet_id,
+                'user_id'           => $request->user_id,
                 'adoption_status'   => 0,
             ];
 
             $appointment_data = [
                 'adoption_id'           => $sequenceNo->Adoption_ID,
-                'appointment_date'      => $request->payload['appointment_date'],
-                'appointment_time'      => $request->payload['appointment_time'],
-                'appointment_with'      => $request->payload['Orgname'],
+                'appointment_date'      => $request->appointmentDetails_date,
+                'appointment_time'      => $request->appointmentDetails_time,
+                'appointment_with'      => $request->Orgname ?? $request->user_id,
                 'appointment_status'    => 0
             ];
 
-            $isCreated_PetAdoption  = PetAdoptionController::create(array_merge($adoption_data, $common_data));
+            $isCreated_PetAdoption  = AdoptPet::create(array_merge($adoption_data, $common_data));
             $isCreated_Apointment   = ScheduledAppointment::create(array_merge($appointment_data, $common_data));
 
             if(!$isCreated_PetAdoption || !$isCreated_Apointment) {

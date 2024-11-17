@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\Api\Dashboard\ManageUserController;
+// use App\Http\Controllers\Api\Dashboard\ManageUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostPetController;
 use App\Http\Controllers\UserActivityLogsController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\user\ManageUserController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\utility\UtilityFetchController;
@@ -47,10 +47,11 @@ Route::controller(UserActivityLogsController::class)->group(function() {
     Route::post('store-logs', 'store');
 });
 
-Route::controller(UserController::class)->group(function() {
+Route::controller(ManageUserController::class)->group(function() {
     Route::post('add-user', 'createUser');
     Route::get('user-list', 'getList');
     Route::get('get-user-details/{id}', 'getUserDetail');
+    Route::put('update-user-status/{id}', 'changeStatus');
 });
 
 Route::controller(UtilityFetchController::class)->group(function(){
