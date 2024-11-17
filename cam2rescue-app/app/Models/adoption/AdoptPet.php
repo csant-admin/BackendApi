@@ -12,4 +12,5 @@ class AdoptPet extends Model
     protected $connection = 'mysql';
     protected $table = 'tbladoption';
     protected $guarded = [];
+    public $timestamps = false;
 }
