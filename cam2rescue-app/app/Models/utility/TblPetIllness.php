@@ -10,4 +10,8 @@ class TblPetIllness extends Model
     use HasFactory;
 
     protected $table = "tblpetilnes";
+    protected $guarded = [];
+    public $timestamps = false;
+    public $increment = false;
+
 }

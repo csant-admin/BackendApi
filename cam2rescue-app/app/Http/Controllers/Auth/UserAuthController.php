@@ -22,12 +22,19 @@ class UserAuthController extends Controller
             if (!$user) {
                 return response()->json(['error' => 'User not found.'], 404);
             }
+
+            if(intval($user->UserStatus) === 0) {
+                return response()->json(['error' => 'Account has been deactivated, please call Cam2Rescue team.'], 404);
+            }
     
             if ($user && Hash::check($request->password, $user->Password)) {
 
                 Auth::login($user);
                 
                 $token = $user->createToken('authToken')->plainTextToken;
+                
+                \Log::info('Login Request:', $request->all());
+
     
                 return response()->json(['user' => $user, 'access_token' => $token, 'token_type' => 'Bearer'], 200);
             } else {
