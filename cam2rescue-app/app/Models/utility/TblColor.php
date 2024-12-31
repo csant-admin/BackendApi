@@ -12,6 +12,9 @@ class TblColor extends Model
     use HasFactory;
 
     protected $table = "tblcolor";
+    protected $guarded = [];
+    public $timestamps = false;
+    public $increment = false;
 
     public function getRescues() {
         return $this->hasMany(PetRescueModel::class, 'PetColorId', 'id');

@@ -12,6 +12,9 @@ class TblInjury extends Model
     use HasFactory;
 
     protected $table = "tblinjury";
+    protected $guarded = [];
+    public $timestamps = false;
+    public $increment = false;
 
     public function getRescues() {
         return $this->hasMany(PetRescueModel::class, 'InjuryId', 'id');

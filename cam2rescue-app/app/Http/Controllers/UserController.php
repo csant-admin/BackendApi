@@ -9,6 +9,7 @@ class UserController extends Controller
 {
     //
     public function createUser(Request $request) {
+        
         $validatedData = $request->validate([
             'UserId'            => 'required|string|max:100',
             'Lastname'          => 'required|string|max:100',

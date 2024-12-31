@@ -13,6 +13,7 @@ use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use App\Http\Controllers\rescue\PetRescueController;
 use App\Http\Controllers\adoption\PetAdoptionController;
 use App\Http\Controllers\report\RescueReportController;
+use App\Http\Controllers\utility\AddNewUtilityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +65,10 @@ Route::controller(UtilityFetchController::class)->group(function(){
     Route::get('get-statuses', 'getStatuses');
     Route::get('get-user-type', 'getUserType');
     Route::get('get-organization-type', 'getOrganizationType');
+});
+
+Route::controller(AddNewUtilityController::class)->group(function(){
+    Route::post('add-new-illness', 'addNewIllness');
 });
 
 Route::controller(PetRescueController::class)->group(function() {

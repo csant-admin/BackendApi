@@ -12,6 +12,9 @@ class TblUrgency extends Model
     use HasFactory;
 
     protected $table = "tblurgency";
+    protected $guarded = [];
+    public $timestamps = false;
+    public $increment = false;
 
     public function getRescues() {
         return $this->hasMany(PetRescueModel::class, 'UrgencyId', 'id');
