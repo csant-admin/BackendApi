@@ -69,6 +69,10 @@ Route::controller(UtilityFetchController::class)->group(function(){
 
 Route::controller(AddNewUtilityController::class)->group(function(){
     Route::post('add-new-illness', 'addNewIllness');
+    Route::post('add-new-barangay', 'addNewBarangay');
+    Route::post('add-new-color', 'addNewColor');
+    Route::post('add-new-injury', 'addNewInjury');
+    Route::post('add-new-urgency', 'addNewUrgency');
 });
 
 Route::controller(PetRescueController::class)->group(function() {
