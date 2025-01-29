@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\rescue\PetRescueModel;
 use Carbon\Carbon;
+use DB;
 
 class PetRescueController extends Controller
 {
@@ -48,23 +49,33 @@ class PetRescueController extends Controller
     }
 
     public function approveRescue($id, Request $request) {
+        DB::connection('mysql')->beginTransaction();
         try {
-            $rescue = PetRescueModel::where('RescueId', $id)->firstOrFail();
+            $rescue = PetRescueModel::where('RescueId', $id)->first();
+
+            if(!$rescue) {
+                throw new Exception("Pet Not Found Error");
+            }
 
             $validatedData = $request->validate([
                 'RescueStatus'  => 'required|integer',
-                'updated_by'    => 'required|string',
+                'updated_by'    => 'required|string'
             ]);
 
-            $rescue->RescueStatus = $validatedData['RescueStatus'];
-            $rescue->updated_by = $validatedData['updated_by'];
-            $rescue->FailedReason = $request['FailedReason'] ?? null;
-            $rescue->updated_at = Carbon::now();
-            
-            $rescue->save();
-    
+            $data = [
+                'RescueStatus'  => $validatedData['RescueStatus'],
+                'updated_by'    => $validatedData['updated_by'],
+                'FailedReason'  => $request['FailedReason'] ?? null
+            ];
+
+            $isSave = $rescue->update($data);
+            if(!$isSave) {
+                throw new \Exeption('An Error occur, please call cam2rescue team');
+            }
+            DB::connection('mysql')->commit();
             return response()->json(['message' => 'Rescue approved successfully'], 200);
         } catch (\Exception $e) {
+            DB::connection('mysql')->rollBack();
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }

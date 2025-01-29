@@ -168,6 +168,4 @@ class ManageUserController extends Controller
             return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
         }
     }
-    
-
 }
