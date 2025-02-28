@@ -22,6 +22,7 @@ class PetAdoptionController extends Controller
         $this->adoption_data = $adoption_data;
     }
 
+    //Get The Details of the pet
     public function getPetDetail($id) {
         try {
             $data = Pet::where('PetID', $id)->get();
@@ -38,6 +39,7 @@ class PetAdoptionController extends Controller
         }
     } 
 
+    //Process to adopt the pet
     public function adoptPet(Request $request) {
         DB::connection('mysql_cam2rescue_core')->beginTransaction();
         DB::connection('mysql')->beginTransaction();

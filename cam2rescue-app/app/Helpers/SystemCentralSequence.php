@@ -81,4 +81,13 @@
             }
         }
 
+        public function updateRecentGeneratedRescueId($newRescueId) {
+            try {
+                $is_updated_sequence = CentralSequences::where('code', 'RSN')->update(['recent_generated' => (int)$newRescueId['seq_no'] - 1]);
+                return $is_updated_sequence;
+            } catch(\Exception $e) {
+                throw new Exception('Failed to update recent generated sequence with code RSN ' . $e->getMessage());
+            }
+        }
+
     }

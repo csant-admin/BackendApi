@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Post;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\PostPet;
 use Carbon\Carbon;
@@ -9,18 +10,21 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\rescue\PetRescueModel;
 use App\Models\core\cam2rescue\CentralSequences;
 use App\Helpers\SystemCentralSequence;
-use DB;
+use App\Helpers\PostPetData;
 
-class PostPetController extends Controller
+class PostController extends Controller
 {
     //
     protected $sequences;
+    protected $post_pet_data;
 
-    public function __construct(SystemCentralSequence $sequences) {
+    public function __construct(SystemCentralSequence $sequences, PostPetData $post_pet_data) {
         $this->sequences = $sequences;
+        $this->post_pet_data = $post_pet_data;
     }
     public function postPet(Request $request) {
-
+        DB::connection('mysql_cam2rescue_core')->beginTransaction();
+        DB::connection('mysql')->beginTransaction();
         $request->validate([
             'petId'             => 'required|string|max:50',
             'image'             => 'required|mimes:jpg,jpeg,png|max:2048',
@@ -28,43 +32,23 @@ class PostPetController extends Controller
             'petGender'         => 'required|string|max:10',
             'petDescription'    => 'required|string|max:1000'
         ]);
-
-        DB::connection('mysql_cam2rescue_core')->beginTransaction();
-        DB::connection('mysql')->beginTransaction();
-        
         try {
-
             $newPetId = $this->sequences->petIdCentralSequence();
-        
-            $data = [
-                'PetID'             => $newPetId['seq_no'],
-                'PetName'           => $request->input('petName'),
-                'PetSex'            => $request->input('petGender'),
-                'PetDescription'    => $request->input('petDescription'),
-                'ImagePath'         => $request->file('image')->store('images', 'public')
-            ];
-
+            $data = $this->post_pet_data->postPetForAdoptionData($request, $newPetId);
             if(PostPet::create($data)) {
-
                 $this->sequences->updateRecentGeneratedPetId($newPetId);
             }
-
             DB::connection('mysql_cam2rescue_core')->commit();
             DB::connection('mysql')->commit();
-
-            return response()->json(['data' => $data], 201);
-
+            return response()->json(['data' => $data], 200);
         } catch(\Exception $e) {
-
             DB::connection('mysql_cam2rescue_core')->rollBack();
             DB::connection('mysql')->rollBack();
-
             return response()->json(['data' => $data], 500);
         }
     }
 
     public function postRescue(Request $request) {
-        
         $request->validate([
             'petId'             => 'required|string|max:50',
             'image'             => 'required|mimes:jpg,jpeg,png|max:2048',
@@ -79,43 +63,17 @@ class PostPetController extends Controller
             'UserID'            => 'required|string|max:20'
 
         ]);
-
         DB::connection('mysql_cam2rescue_core')->beginTransaction();
         DB::connection('mysql')->beginTransaction();
-
         try {
-
-            $sequenceNo = CentralSequences::increment('PetIdNo')->first(['PetIdNo']);
-
-            $data = [
-                'RescueId'          => $sequenceNo->PetIdNo,
-                'PetColorId'        => $request->input('Color'),
-                'PetSexId'          => $request->input('Gender'),
-                'InjuryId'          => $request->input('Injury'),
-                'UrgencyId'         => $request->input('Urgency'),
-                'BarangayId'        => $request->input('Barangay'),
-                'SBZ_Address'       => $request->input('Street'),
-                'City'              => $request->input('City'),
-                'Description'       => $request->input('description'),
-                'ImagePath'         => $request->file('image')->store('images/rescue-images', 'public'),
-                'created_by'        => $request->input('UserID'),
-                'created_at'        => Carbon::now(),
-                'updated_by'        => $request->input('UserID'),
-                'updated_at'        => Carbon::now()
-            ];
-
+            $newRescueId = $this->sequences->rescueIdCentralSequence();
+            $data = $this->post_pet_data->postPetForRescueData($request, $newRescueId);
             if(PetRescueModel::create($data)) {
-
-                $sequenceNo->where('Sequence_Id', 0)->update([
-                    'Recently_Generated_PetID' => $sequenceNo->PetIdNo,
-                ]);
+                $this->sequences->updateRecentGeneratedRescueId($newRescueId);
             }
-
             DB::connection('mysql_cam2rescue_core')->commit();
             DB::connection('mysql')->commit();
-
             return response()->json(['data' => $data, 'msg' => 'Posted Successfully'], 201);
-
         } catch(\Exception $e) {
 
             DB::connection('mysql_cam2rescue_core')->rollBack();
