@@ -11,7 +11,7 @@ class CentralSequences extends Model
 
     protected $connection = 'mysql_cam2rescue_core';
 
-    protected $table = 'central_sequence_no';
+    protected $table = 'systemcentralsequence';
 
     protected $guarded = [];
 

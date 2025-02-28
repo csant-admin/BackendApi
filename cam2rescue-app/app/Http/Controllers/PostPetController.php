@@ -8,11 +8,17 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Models\rescue\PetRescueModel;
 use App\Models\core\cam2rescue\CentralSequences;
+use App\Helpers\SystemCentralSequence;
 use DB;
 
 class PostPetController extends Controller
 {
     //
+    protected $sequences;
+
+    public function __construct(SystemCentralSequence $sequences) {
+        $this->sequences = $sequences;
+    }
     public function postPet(Request $request) {
 
         $request->validate([
@@ -28,10 +34,10 @@ class PostPetController extends Controller
         
         try {
 
-            $sequenceNo = CentralSequences::increment('PetIdNo')->first(['PetIdNo']);
+            $newPetId = $this->sequences->petIdCentralSequence();
         
             $data = [
-                'PetID'             => $sequenceNo->PetIdNo,
+                'PetID'             => $newPetId['seq_no'],
                 'PetName'           => $request->input('petName'),
                 'PetSex'            => $request->input('petGender'),
                 'PetDescription'    => $request->input('petDescription'),
@@ -40,9 +46,7 @@ class PostPetController extends Controller
 
             if(PostPet::create($data)) {
 
-                $sequenceNo->where('Sequence_Id', 0)->update([
-                    'Recently_Generated_PetID' => $sequenceNo->PetIdNo
-                ]);
+                $this->sequences->updateRecentGeneratedPetId($newPetId);
             }
 
             DB::connection('mysql_cam2rescue_core')->commit();
