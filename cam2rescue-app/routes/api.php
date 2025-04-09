@@ -3,10 +3,11 @@
 // use App\Http\Controllers\Api\Dashboard\ManageUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PostPetController;
+use App\Http\Controllers\Post\PostAdoption;
+use App\Http\Controllers\Post\PostRescue;
 use App\Http\Controllers\UserActivityLogsController;
 use App\Http\Controllers\user\ManageUserController;
-use App\Http\Controllers\PetController;
+use App\Http\Controllers\Pets\ListOfPets;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\utility\UtilityFetchController;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
@@ -35,13 +36,18 @@ Route::controller(UserAuthController::class)->group(function() {
     Route::post('logout', 'logout');
 });
 
-Route::controller(PostPetController::class)->group(function() {
+Route::controller(PostAdoption::class)->group(function() {
     Route::post('post-pet', 'postPet');
-    Route::post('post-rescue', 'postRescue');
+    Route::post('remove-post/{id}', 'removePost');
 });
 
-Route::controller(PetController::class)->group(function() {
-    Route::get('list-of-pets', 'getPetList');
+Route::controller(PostRescue::class)->group(function() {
+    Route::post('post-rescue', 'postRescue');
+    Route::post('remove-post/{id}', 'removePost');
+});
+
+Route::controller(ListOfPets::class)->group(function() {
+    Route::get('list-of-pets', 'list');
 });
 
 Route::controller(UserActivityLogsController::class)->group(function() {

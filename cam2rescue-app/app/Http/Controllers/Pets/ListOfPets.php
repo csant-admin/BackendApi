@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Pets;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use DB;
 
-class PetController extends Controller
+class ListOfPets extends Controller
 {
     //
-
-    public function getPetList() {
+    public function list() {
         try {
             $lists = DB::table('tblpet')->select('PetID', 'PetName', 'PetDescription', 'ImagePath')->get();
     
-            if ($lists->isEmpty()) {
+            if (!$lists) {
                 return response()->json(['data' => [], 'message' => 'No Pets Found!'], 404);
             }
     
@@ -37,5 +37,4 @@ class PetController extends Controller
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
-    
 }

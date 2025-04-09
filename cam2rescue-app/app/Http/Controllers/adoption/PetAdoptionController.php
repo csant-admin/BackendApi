@@ -8,88 +8,63 @@ use DB;
 use App\Models\pet\Pet;
 use App\Models\adoption\AdoptPet;
 use \Carbon\Carbon;
-use App\Models\core\cam2rescue\CentralSequences;
 use App\Models\appointment\ScheduledAppointment;
+use App\Helpers\SystemCentralSequence;
+use App\Helpers\AdoptionDataHelper;
 
 class PetAdoptionController extends Controller
 {
     //
+    protected $sequences;
+    protected $adoption_data;
 
+    public function __construct(SystemCentralSequence $sequences, AdoptionDataHelper $adoption_data) {
+        $this->sequences = $sequences;
+        $this->adoption_data = $adoption_data;
+    }
+
+    //Get The Details of the pet
     public function getPetDetail($id) {
         try {
             $data = Pet::where('PetID', $id)->get();
-
             if($data->isEmpty()) {
-
                 return response()->json([
                     'message' => 'No Pet Found with this Id : ' . $id
                 ], 404);
             }
-
             return response()->json($data, 200);
-
         } catch(\Exception $e) {
-
             return response()->json([
                 'message' => 'Error!' . $e->getMessage()
             ], 500);
         }
     } 
 
+    //Process to adopt the pet
     public function adoptPet(Request $request) {
         DB::connection('mysql_cam2rescue_core')->beginTransaction();
         DB::connection('mysql')->beginTransaction();
         try{
-            $adoptee = $request->Lastname . ' ' . $request->Firstname ?? null;
-
-            CentralSequences::where('Sequence_Id', 0)->increment('Adoption_ID');
-
-            $sequenceNo = CentralSequences::where('Sequence_Id', 0)->first(['Adoption_ID']);
-            if (!$sequenceNo) {
-                throw new \Exception("Failed to retrieve the incremented 'Adoption_ID'.");
+            $newAdoptionId = $this->sequences->adoptionCentralSequence();
+            if(!$newAdoptionId) {
+                throw new Exception('Failed to get new user ID');
             }
-
-            $common_data = [
-                'created_at'    => Carbon::now(),
-                'created_by'    => $adoptee,
-                'updated_at'    => Carbon::now(),
-                'updated_by'    => $request->user_id
-            ];
-
-            $adoption_data = [
-                'adoption_id'       => $sequenceNo->Adoption_ID,
-                'pet_id'            => $request->pet_id,
-                'user_id'           => $request->user_id,
-                'adoption_status'   => 0,
-            ];
-
-            $appointment_data = [
-                'adoption_id'           => $sequenceNo->Adoption_ID,
-                'appointment_date'      => $request->appointmentDetails_date,
-                'appointment_time'      => $request->appointmentDetails_time,
-                'appointment_with'      => $request->Orgname ?? $request->user_id,
-                'appointment_status'    => 0
-            ];
+            $adoption_data      = $this->adoption_data->adoptionData($request, $newAdoptionId);
+            $appointment_data   = $this->adoption_data->appointmentData($request, $newAdoptionId);
+            $common_data        = $this->adoption_data->commonData($request);
 
             $isCreated_PetAdoption  = AdoptPet::create(array_merge($adoption_data, $common_data));
             $isCreated_Apointment   = ScheduledAppointment::create(array_merge($appointment_data, $common_data));
 
             if(!$isCreated_PetAdoption || !$isCreated_Apointment) {
-
                 throw new \Exception("Failed to create either Pet Adoption or Appointment.");
             }
-
-            CentralSequences::where('Sequence_Id', 0)->update([
-                'Recently_Generated_Adoption_ID' => $sequenceNo->Adoption_ID
-            ]);
-
+            $this->sequences->updateRecentGeneratedAdoptionId($newAdoptionId);
             DB::connection('mysql_cam2rescue_core')->commit();
             DB::connection('mysql')->commit();
-
             return response()->json([
                 'message' => 'Adoption has been successfully created'
             ], 200);
-
         } catch(\Exception $e) {
 
             DB::connection('mysql_cam2rescue_core')->rollBack();

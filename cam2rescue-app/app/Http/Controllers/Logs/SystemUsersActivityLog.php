@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Logs;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UserActivityLog;
 
-class UserActivityLogsController extends Controller
+class SystemUsersActivityLog extends Controller
 {
     //
     public function store(Request $request) {
@@ -17,7 +18,6 @@ class UserActivityLogsController extends Controller
         $eventData = $validatedData['event_data'];
 
         UserActivityLog::create(['Title' => $event_type, 'Activity' => $eventData]);
-
         return response()->json(['message' => 'Log saved successfully'], 200);
     }
 }
