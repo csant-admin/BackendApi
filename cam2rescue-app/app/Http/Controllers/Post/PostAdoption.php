@@ -4,15 +4,13 @@ namespace App\Http\Controllers\Post;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\PostPet;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
-use App\Models\rescue\PetRescueModel;
 use App\Models\core\cam2rescue\CentralSequences;
+use App\Models\PostPet;
 use App\Helpers\SystemCentralSequence;
 use App\Helpers\PostPetData;
+use DB;
 
-class PostController extends Controller
+class PostAdoption extends Controller
 {
     //
     protected $sequences;
@@ -26,7 +24,6 @@ class PostController extends Controller
         DB::connection('mysql_cam2rescue_core')->beginTransaction();
         DB::connection('mysql')->beginTransaction();
         $request->validate([
-            'petId'             => 'required|string|max:50',
             'image'             => 'required|mimes:jpg,jpeg,png|max:2048',
             'petName'           => 'required|string|max:100',
             'petGender'         => 'required|string|max:10',
@@ -35,7 +32,7 @@ class PostController extends Controller
         try {
             $newPetId = $this->sequences->petIdCentralSequence();
             $data = $this->post_pet_data->postPetForAdoptionData($request, $newPetId);
-            if(PostPet::create($data)) {
+            if(PostPet::updateOrCreate(['PetID' => $newPetId['seq_no']], $data)) {
                 $this->sequences->updateRecentGeneratedPetId($newPetId);
             }
             DB::connection('mysql_cam2rescue_core')->commit();
@@ -48,38 +45,18 @@ class PostController extends Controller
         }
     }
 
-    public function postRescue(Request $request) {
-        $request->validate([
-            'petId'             => 'required|string|max:50',
-            'image'             => 'required|mimes:jpg,jpeg,png|max:2048',
-            'Color'             => 'required|string|max:50',
-            'Injury'            => 'required|string|max:5',
-            'Urgency'           => 'required|string|max:5',
-            'Gender'            => 'required|string|max:50',
-            'Barangay'          => 'required|string|max:50',
-            'Street'            => 'required|string|max:100',
-            'City'              => 'required|string|max:100',
-            'description'       => 'required|string|max:1000',
-            'UserID'            => 'required|string|max:20'
-
-        ]);
-        DB::connection('mysql_cam2rescue_core')->beginTransaction();
+    public function removePost(Request $request, $id) {
         DB::connection('mysql')->beginTransaction();
-        try {
-            $newRescueId = $this->sequences->rescueIdCentralSequence();
-            $data = $this->post_pet_data->postPetForRescueData($request, $newRescueId);
-            if(PetRescueModel::create($data)) {
-                $this->sequences->updateRecentGeneratedRescueId($newRescueId);
+        try{
+            if(DB::connection('mysql')->table('pets')->where('PetId', $id)->delete()) {
+                DB::connection('mysql')->commit();
+                return response()->json(['message' => 'Post has been successfully deleted'], 200);
+            } else {
+                throw new \Exception('Failed to delete Post');
             }
-            DB::connection('mysql_cam2rescue_core')->commit();
-            DB::connection('mysql')->commit();
-            return response()->json(['data' => $data, 'msg' => 'Posted Successfully'], 201);
         } catch(\Exception $e) {
-
-            DB::connection('mysql_cam2rescue_core')->rollBack();
             DB::connection('mysql')->rollBack();
-
-            return response()->json(['msg' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 }

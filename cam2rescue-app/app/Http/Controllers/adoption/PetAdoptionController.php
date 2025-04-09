@@ -10,6 +10,7 @@ use App\Models\adoption\AdoptPet;
 use \Carbon\Carbon;
 use App\Models\appointment\ScheduledAppointment;
 use App\Helpers\SystemCentralSequence;
+use App\Helpers\AdoptionDataHelper;
 
 class PetAdoptionController extends Controller
 {
@@ -17,7 +18,7 @@ class PetAdoptionController extends Controller
     protected $sequences;
     protected $adoption_data;
 
-    public function __construct(SystemCentralSequence $sequences, AdoptionDataHeper $adoption_data) {
+    public function __construct(SystemCentralSequence $sequences, AdoptionDataHelper $adoption_data) {
         $this->sequences = $sequences;
         $this->adoption_data = $adoption_data;
     }
@@ -58,7 +59,7 @@ class PetAdoptionController extends Controller
             if(!$isCreated_PetAdoption || !$isCreated_Apointment) {
                 throw new \Exception("Failed to create either Pet Adoption or Appointment.");
             }
-            $this->sequences->updateRecentGenratedAdoptionId($newAdoptionId);
+            $this->sequences->updateRecentGeneratedAdoptionId($newAdoptionId);
             DB::connection('mysql_cam2rescue_core')->commit();
             DB::connection('mysql')->commit();
             return response()->json([

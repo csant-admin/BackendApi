@@ -29,7 +29,8 @@
 
         public function rescueIdCentralSequence() {
             try {
-                $seq_no = CentralSequences::where('code', 'RSN')->incremenAndGet('seq_no');
+                CentralSequences::where('code', 'RSN')->increment('seq_no');
+                $seq_no = CentralSequences::where('code', 'RSN')->value('seq_no');
                 return compact('seq_no');
             } catch(\Exception $e) {
                 throw new \Exception('Failed to update or retrieve the sequence: ' . $e->getMessage());
@@ -38,7 +39,8 @@
 
         public function adoptionCentralSequence() {
             try {
-                $seq_no = CentralSequences::where('code', 'PASN')->incrementAndGet('seq_no');
+                CentralSequences::where('code', 'PASN')->increment('seq_no');
+                $seq_no = CentralSequences::where('code', 'PASN')->value('seq_no');
                 return compact('seq_no');
             } catch(\Exception $e) {
                 throw new \Exception('Failed to update or retrieve the sequence: ' . $e->getMessage());
@@ -47,7 +49,8 @@
 
         public function appointmentCentralSequences() {
             try {
-                $seq_no = CentralSequences::where('code', 'APSN')->incrementAndGet('seq_no');
+                CentralSequences::where('code', 'APSN')->increment('seq_no');
+                $seq_no = CentralSequences::where('code', 'APSN')->value('seq_no');
                 return compact('seq_no');
             } catch(\Exception $e) {
                 throw new \Exception('Failed to update or retrieve the sequence: ' . $e->getMessage());
@@ -72,9 +75,9 @@
             }
         }
 
-        public function updateRecentGenratedAdoptionId() {
+        public function updateRecentGeneratedAdoptionId($newAdoptionId) {
             try {
-                $is_updated_sequence = CentralSequences::where('code', 'PASN')->update(['recent_generated' => (int)$newAdoptionId['seq-no'] - 1]);
+                $is_updated_sequence = CentralSequences::where('code', 'PASN')->update(['recent_generated' => (int)$newAdoptionId['seq_no'] - 1]);
                 return $is_updated_sequence;
             } catch(\Exception $e) {
                 throw new Exception('Failed to update recent_generated Sequence with code PASN ' . $e->getMessage());
