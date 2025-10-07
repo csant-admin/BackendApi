@@ -9,8 +9,9 @@ class PostPet extends Model
 {
     use HasFactory;
 
+    protected $connection = 'mysql';
     protected $table = "tblpet";
-    protected $fillable = ['PetID', 'PetName', 'PetSex', 'PetDescription', 'ImagePath'];
+    protected $guarded = [];
     public $timestamps = false;
 
 }

@@ -25,9 +25,18 @@ class ManageUserController extends Controller
         DB::connection('mysql')->beginTransaction();
         try {
             $validated_data = $this->user_data->screenUserData($request);
-            $newUserId = $this->sequences->userIdCentalSequence();
-            $user = User::create($this->user_data->userTblData($validated_data, $newUserId));
-            $detail = UserDetail::create($this->user_data->userDetailTblData($validated_data, $newUserId));
+            $isUserExist = UserDetail::where('Lastname', $validated_data['Lastname'])
+                ->where('Firstname', $validated_data['Firstname'])
+                ->first();
+            if(!$isUserExist) {
+                $newUserId = $this->sequences->userIdCentalSequence();
+            }
+            $user = User::updateOrCreate(['UserID' => $newUserId], $this->user_data->userTblData($validated_data, $newUserId));
+            $detail = UserDetail::updateOrCreate([
+                    'UserId'    => $newUserId, 
+                    'Lastname'  => $validated_data['Lastname'],
+                    'Firstname' => $validated_data['Firstname'],
+                ], $this->user_data->userDetailTblData($validated_data, $newUserId));
             if(!$user && !$detail) {
                 throw new Exception('Failed to Register user');
             }

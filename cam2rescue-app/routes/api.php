@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Post\PostAdoption;
 use App\Http\Controllers\Post\PostRescue;
+use App\Http\Controllers\Post\SharedStories;
 use App\Http\Controllers\UserActivityLogsController;
 use App\Http\Controllers\user\ManageUserController;
 use App\Http\Controllers\Pets\ListOfPets;
@@ -15,6 +16,7 @@ use App\Http\Controllers\rescue\PetRescueController;
 use App\Http\Controllers\adoption\PetAdoptionController;
 use App\Http\Controllers\report\RescueReportController;
 use App\Http\Controllers\utility\AddNewUtilityController;
+use App\Http\Controllers\mail\SendEmail;
 
 /*
 |--------------------------------------------------------------------------
@@ -90,5 +92,15 @@ Route::controller(PetRescueController::class)->group(function() {
 Route::controller(PetAdoptionController::class)->group(function() {
     Route::get('get-pet-details/{id}', 'getPetDetail');
     Route::post('post-adoption', 'adoptPet');
+    Route::get('adoption-request-list', 'getAdoptionRequestList');
+});
+
+Route::controller(SharedStories::class)->group(function() {
+    Route::post('my-story', 'postStories');
+    Route::get('get-user-stories', 'getStories');
+});
+
+Route::controller(SendEmail::class)->group(function() {
+    Route::post('send-email', 'send');
 });
 
