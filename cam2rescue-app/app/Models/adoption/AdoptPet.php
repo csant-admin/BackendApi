@@ -4,6 +4,8 @@ namespace App\Models\adoption;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\pet\Pet;
+use App\Models\User\UserDetail;
 
 class AdoptPet extends Model
 {
@@ -13,4 +15,14 @@ class AdoptPet extends Model
     protected $table = 'tbladoption';
     protected $guarded = [];
     public $timestamps = false;
+
+    public function pet() {
+        return $this->hasMany(Pet::class, 'PetID', 'pet_id');
+    }
+
+    public function userDetails() {
+        return $this->belongsTo(UserDetail::class, 'user_id', 'UserId');
+    }
+
+    
 }

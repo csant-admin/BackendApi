@@ -8,6 +8,8 @@ use App\Http\Controllers\utility\UtilityFetchController;
 use App\Http\Controllers\rescue\PetRescueController;
 use App\Http\Controllers\report\RescueReportController;
 use App\Http\Controllers\adoption\PetAdoptionController;
+use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\mail\SendEmail;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,10 +39,25 @@ Route::get('/get-pet-detail', [PetAdoptionController::class, 'getPetDetail']);
 Route::get('/test-token', [TestController::class, 'createToken']);
 Route::get('/get-rescue-list', [PetRescueController::class, 'getRescueList']);
 Route::get('generate-rescue-report/{rescueId}', [RescueReportController::class, 'generateRescueReport']);
+Route::get('adoption-schedule', [PetAdoptionController::class, 'getAdoptionRequestList']);
 
 
 Route::get('/check-auth', function () {
     $user = UserAuth::user();
     return $user ? $user : 'User not authenticated';
 });
+
+Route::get('/test-email', function () {
+    Mail::raw('This is a test email from Cam2Rescue Laravel app.', function ($message) {
+        $message->to('santandercharlie.mail@gmail.com')
+                ->subject('Test Email');
+    });
+
+    return 'NA SEND NA ANG EMAIL BOANG MAN NI';
+});
+
+
+
+Route::get('/test-phpmailer', [SendEmail::class, 'send']);
+
 

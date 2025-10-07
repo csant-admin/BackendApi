@@ -18,7 +18,13 @@ class UserAuthController extends Controller
             'password' => 'required',
         ]);
         try {
-            $user = UserAuth::where('Username', $request->username)->first();
+            $user = UserAuth::with(['roles' => function ($roleQuery) {
+                $roleQuery->with(['accessControl' => function ($acQuery) {
+                    $acQuery->where('access_permission', 1);
+                }]);
+            }])->where('Username', $request->username)->first();
+
+
             if (!$user) {
                 return response()->json(['error' => 'User not found.'], 404);
             }

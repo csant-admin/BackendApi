@@ -8,6 +8,7 @@ class PostPetData {
             'PetID'             => $newPetId['seq_no'],
             'PetName'           => $request->input('petName'),
             'PetSex'            => $request->input('petGender'),
+            'petColorId'        => $request->input('petColor'),
             'PetDescription'    => $request->input('petDescription'),
             'ImagePath'         => $request->file('image')->store('images', 'public')
         ];

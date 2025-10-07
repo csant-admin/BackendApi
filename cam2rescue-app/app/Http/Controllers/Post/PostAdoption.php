@@ -23,10 +23,11 @@ class PostAdoption extends Controller
     public function postPet(Request $request) {
         DB::connection('mysql_cam2rescue_core')->beginTransaction();
         DB::connection('mysql')->beginTransaction();
-        $request->validate([
+        $validated_data = $request->validate([
             'image'             => 'required|mimes:jpg,jpeg,png|max:2048',
             'petName'           => 'required|string|max:100',
             'petGender'         => 'required|string|max:10',
+            'petColor'          => 'required|string|max:10',
             'petDescription'    => 'required|string|max:1000'
         ]);
         try {
@@ -41,7 +42,7 @@ class PostAdoption extends Controller
         } catch(\Exception $e) {
             DB::connection('mysql_cam2rescue_core')->rollBack();
             DB::connection('mysql')->rollBack();
-            return response()->json(['data' => $data], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 

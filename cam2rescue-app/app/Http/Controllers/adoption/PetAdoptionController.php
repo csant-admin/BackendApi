@@ -76,4 +76,13 @@ class PetAdoptionController extends Controller
             ], 500);
         }
     }
+
+    public function getAdoptionRequestList(Request $request) {
+        $id = $request->input('id');
+        $data = AdoptPet::with(['pet', 'pet.petColor', 'pet.petSex', 'userDetails'])->where('user_id', $id)->get();
+        if($data->isEmpty()) {
+            return response()->json(['data' => []], 200);
+        }
+        return response()->json(['data' => $data], 200);
+    }
 }

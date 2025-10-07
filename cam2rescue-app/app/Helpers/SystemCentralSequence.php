@@ -71,7 +71,7 @@
                 $is_updated_sequence = CentralSequences::where('code', 'PSN')->update(['recent_generated' => (int)$newPetId['seq_no'] - 1]);
                 return $is_updated_sequence;
             } catch(\Exception $e) {
-                throw new \Exception('Failed to update recent generated sequence with code PSN ', $e->getMessage());
+                throw new \Exception('Failed to update recent generated sequence with code PSN '. $e->getMessage());
             }
         }
 
