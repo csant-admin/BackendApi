@@ -11,6 +11,24 @@ class AccessControl extends Model
 
     protected $connection = 'mysql';
     protected $table = 'tblaccesscontrol';
-    protected $guarded = [];
+
+    protected $fillable = [
+        'role_Id',
+        'access_permission',
+        'registered_url',
+        'Name',
+        'icon',
+        'group_url',
+    ];
+
+    public function getRegisteredUrlAttribute($value)
+    {
+        if (is_string($value)) {
+            return stripslashes(trim($value, "\"'\\"));
+        }
+        return $value;
+    }
+
+
     public $timestamps = false;
 }
